@@ -1,9 +1,15 @@
+import { Link } from "react-router-dom";
+
 function MissingPage() {
   return (
-    <main>
-      <h1>MissingPage</h1>
+    <main className="Missing">
+      <h2>Page Not Found</h2>
+      <p>Well, that's disappointing.</p>
+      <p>
+        <Link to="/">Visit Our Homepage</Link>
+      </p>
     </main>
   );
-}
+};
 
 export default MissingPage;
