@@ -11,6 +11,8 @@ import {Routes, Route, useNavigate} from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import api from './api/posts'
+import useWindowSize from "./hooks/useWindowSize";
+import useAxiosFetch from "./hooks/useAxiosFetch"; 
 
 function App() {
   const [posts, setPosts] = useState([]); //each post and their setter
@@ -22,6 +24,8 @@ function App() {
 
   const [editTitle, setEditTitle] = useState(""); // state for editing a post title and it setter
   const [editBody, setEditBody] = useState(""); // state for editing a post body and it set
+  const { width } =  useWindowSize();
+  const { data, fetchError, isLoading } = useAxiosFetch('http://localhost:3500/posts')
 
   //useEffect to fetch data from api at load time(get method)
 
@@ -30,26 +34,31 @@ function App() {
   /////////////////////////////////////////////////////
 
   //GET operation
+  // useEffect(() => {
+  //   async function fetchPost() {
+  //     try {
+  //       const getData = await api.get("/posts"); // axios automatically catches error
+  //       setPosts(getData.data);
+  //     } catch (err) {
+  //       if (err.response) {
+  //         //error not in 200 response range
+  //         console.log(err.response.data);
+  //         console.log(err.response.status);
+  //         console.log(err.response.headers);
+  //       } else {
+  //         // this catches all sort of error here
+  //         console.log(`Error: ${err.message}`);
+  //       }
+  //     }
+  //   }
+  //   // calling the function to fetch data
+  //   fetchPost();
+  // }, []);
+
   useEffect(() => {
-    async function fetchPost() {
-      try {
-        const getData = await api.get("/posts"); // axios automatically catches error
-        setPosts(getData.data);
-      } catch (err) {
-        if (err.response) {
-          //error not in 200 response range
-          console.log(err.response.data);
-          console.log(err.response.status);
-          console.log(err.response.headers);
-        } else {
-          // this catches all sort of error here
-          console.log(`Error: ${err.message}`);
-        }
-      }
-    }
-    // calling the function to fetch data
-    fetchPost();
-  }, []);
+    setPosts(data);
+
+  },[data])
 
   //using useEffect to filter post, search post
   useEffect(() => {
@@ -112,9 +121,9 @@ function App() {
     <Routes>
       <Route
         path="/"
-        element={<Layout search={search} setSearch={setSearch} />}
+        element={<Layout search={search} setSearch={setSearch} width={width} />}
       >
-        <Route path="/" element={<Home posts={searchResults} />} />
+        <Route path="/" element={<Home posts={searchResults} fetchError={fetchError} isLoading={isLoading} />} />
         <Route
           path="post"
           element={
